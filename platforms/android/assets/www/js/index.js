@@ -24,7 +24,7 @@ var app = {
     punto:false,
     initialize: function() {
         this.bindEvents();
-        setInterval('app.reloj()', 5999);
+        setInterval('app.reloj()',10000);
         console.log("initialize: ");
     },
 

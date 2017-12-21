@@ -21,6 +21,7 @@ package com.espi.RelojTermoCordova;
 
 import android.os.Bundle;
 import org.apache.cordova.*;
+import android.view.WindowManager;
 
 public class MainActivity extends CordovaActivity
 {
@@ -28,6 +29,8 @@ public class MainActivity extends CordovaActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // enable Cordova apps to be started in the background
         Bundle extras = getIntent().getExtras();
