@@ -75,7 +75,7 @@ var app = {
                     presion=data.field3;
                     $("#idTemp").text(temperatura.slice(0,2));
                     $("#idHumedad").text(humedad.slice(0,2));
-                    $("#idPresion").text(presion.slice(0,3));
+                    $("#idPresion").text(presion.slice(0,4));
                     
                     console.log("Temperatura: " + data.field1);
                     console.log("Humedad: " + data.field2);
