@@ -52,10 +52,12 @@
 }
 
 #idFecha {
-    font-size:2.0em;
+    font-size:3em;
     padding-top: 0 !important;
     border-top: 0 !important;
     text-align: center !important;
+    text-shadow: 0px 0px 20px  white !important;
+    color: orange;
 }
 
 .valores{
@@ -75,7 +77,7 @@
 .valores p{
     display:inline;
     font-size: 2em;
-    padding-right: 1.5em
+    padding-right: 0.5em
 }
 
 
@@ -96,3 +98,11 @@
     animation:fade 1000ms infinite;
     -webkit-animation:fade 1000ms infinite;
 }
+
+.blink_500 {
+    animation:fade 500ms infinite;
+    -webkit-animation:fade 500ms infinite;
+    
+    
+}
+

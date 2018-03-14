@@ -51,6 +51,7 @@ var app = {
         var temperatura="";
         var humedad="";
         var presion="";
+        var corriente="";
          
         app.hora = hora.getHours();
         app.minu = hora.getMinutes();
@@ -87,6 +88,34 @@ var app = {
                       console.log("Error comunicacion");
                 });  
         
+        //Corriente
+        
+        $.getJSON('http://api.thingspeak.com/channels/267256/feeds/last.json?api_key=0C2M9I6C2LOH21AI')
+                //, function (vj) {
+                .done(function (data) {
+                    
+                   
+                    corriente=data.field1;
+            
+                    if(data.field1 <= 6.0 )
+                         $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color","yellowgreen");
+                    else if (data.field1 >= 6.0 && data.field1 <= 10.0 )
+                         $("#idCorriente").text(data.field1)
+                                          .addClass("blink")
+                                          .css("color","yellow");
+                    else
+                         $("#idCorriente").text(data.field1)
+                                          .addClass("blink_500")
+                                          .css("color","coral");;  
+                    
+                    console.log("Corriente: " + data.field1);
+                   
+                })
+
+                .error(function () {
+                     
+                      console.log("Error comunicacion");
+                });  
         
         
         
