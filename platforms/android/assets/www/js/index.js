@@ -100,11 +100,14 @@ var app = {
                     if(data.field1 <= 6.0 )
                          $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color","yellowgreen");
                     else if (data.field1 >= 6.0 && data.field1 <= 10.0 )
-                         $("#idCorriente").text(data.field1).addClass("blink").css("color","yellow");
+                         $("#idCorriente").text(data.field1)
+                                          .removeClass("blink_500")
+                                          .addClass("blink")
+                                          .css("color","yellow");
                     else
-                         $("#idCorriente").text(data.field1).addClass("blink_500").css("color","coral");;  
-                                       
-                   
+                         $("#idCorriente").text(data.field1)
+                                          .addClass("blink_500")
+                                          .css("color","red");;  
                     
                     console.log("Corriente: " + data.field1);
                    

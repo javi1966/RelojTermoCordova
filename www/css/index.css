@@ -77,8 +77,9 @@
 .valores p{
     display:inline;
     font-size: 2em;
-    padding-right: 0.5em
-}
+    padding-right: 0.5em;
+   
+ }
 
 
 @keyframes fade {
@@ -100,8 +101,8 @@
 }
 
 .blink_500 {
-    animation:fade 500ms infinite;
-    -webkit-animation:fade 500ms infinite;
+    animation:fade 400ms infinite;
+    -webkit-animation:fade 400ms infinite;
     
     
 }
