@@ -74,10 +74,15 @@
     text-shadow: 0px 0px 20px  white !important;
 }
 
+.valores > span{
+    
+     padding-left: 0.2em;
+}
+
 .valores p{
     display:inline;
     font-size: 2em;
-    padding-right: 0.5em;
+    padding-right: 0.2em;
    
  }
 
@@ -103,7 +108,7 @@
 .blink_500 {
     animation:fade 400ms infinite;
     -webkit-animation:fade 400ms infinite;
-    
+    text-shadow: 0px 0px 20px  red !important;
     
 }
 
