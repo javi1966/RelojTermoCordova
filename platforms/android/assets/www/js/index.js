@@ -16,15 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+var  bMedida = true;
+var  tempInt = "";
+
 var app = {
     // Application Constructor
     hora: "",
     minu: "",
     seg: "",
-    punto:false,
-    initialize: function() {
+    punto: false,
+    
+    initialize: function () {
         this.bindEvents();
-        setInterval('app.reloj()',10000);
+        setInterval('app.reloj()', 12000);
+        setInterval('app.cambioMedida()', 5000);
         console.log("initialize: ");
     },
 
@@ -35,10 +41,10 @@ var app = {
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         //$(document).on('pageshow', '#main', this.onPageShow);
-        
+
         console.log("bindEvents:");
     },
-    
+
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
         //$(document).bind("resume", app.onResumedApp);
@@ -47,86 +53,121 @@ var app = {
     },
     reloj: function () {
         var hora = new Date();
-        var strHora="";
-        var temperatura="";
-        var humedad="";
-        var presion="";
-        var corriente="";
-         
+        var strHora = "";
+        var temperatura = "";
+        var humedad = "";
+        var presion = "";
+        var corriente = "";
+
         app.hora = hora.getHours();
         app.minu = hora.getMinutes();
-        app.seg  = hora.getSeconds();
-        
+        app.seg = hora.getSeconds();
+
         app.minu = app.minu > 9 ? app.minu : '0' + app.minu;
-        strHora =  app.hora + ':' + app.minu;
-                                
-        
+        strHora = app.hora + ':' + app.minu;
+
+
         $("#idHora span:first").text(app.hora);
         $("#idHora span:last").text(app.minu);
-        
+
         $("#idFecha").text(hora.toLocaleDateString("es"));
-                
         
+        
+         $.getJSON('http://api.thingspeak.com/channels/172131/fields/4/last.json?api_key=SQ0AWSJRWFJ8Z7O1')
+                 .done(function(data){
+                     
+                     tempInt=data.field4;
+                     console.log("Temp. Interior: "+tempInt);
+                    })
+            
+                  .error(function () {
+
+                    console.log("Error comunicacion");
+                  });
+
         $.getJSON('http://api.thingspeak.com/channels/172131/feeds/last.json?api_key=SQ0AWSJRWFJ8Z7O1')
-                //, function (vj) {
+                
                 .done(function (data) {
-                    
-                    temperatura=data.field1;
-                    humedad=data.field2;
-                    presion=data.field3;
-                    $("#idTemp").text(temperatura.slice(0,2));
-                    $("#idHumedad").text(humedad.slice(0,2));
-                    $("#idPresion").text(presion.slice(0,4));
-                    
+                 
+         
+                    if( bMedida)
+                    {
+                        temperatura = data.field1;
+                        $("#idTemp").text(temperatura.slice(0, 2))
+                                    .css("border-top","4px solid white")
+                                    .css("border-bottom","");
+                                      // .css("color","red");
+                        console.log("Temperatura 1: " + data.field1); 
+                    }
+                    else
+                    {
+                         //console.log("Temperatura 4: " + data.field4);   
+                        // temperatura = data.field4;
+                         $("#idTemp").text(tempInt.slice(0, 2))
+                                    // .css("color","blue");
+                                     .css("border-bottom","4px solid white")
+                                     .css("border-top","") ;
+                                      
+                                     
+                    }
+                   // temperatura = data.field1;
+                    humedad = data.field2;
+                    presion = data.field3;
+                    //$("#idTemp").text(temperatura.slice(0, 2));
+                    $("#idHumedad").text(humedad.slice(0, 2));
+                    $("#idPresion").text(presion.slice(0, 4));
+
                     console.log("Temperatura: " + data.field1);
                     console.log("Humedad: " + data.field2);
                     console.log("Presion: " + data.field3);
                 })
 
                 .error(function () {
-                     
-                      console.log("Error comunicacion");
-                });  
-        
+
+                    console.log("Error comunicacion");
+                });
+
         //Corriente
-        
+
         $.getJSON('http://api.thingspeak.com/channels/267256/feeds/last.json?api_key=0C2M9I6C2LOH21AI')
                 //, function (vj) {
                 .done(function (data) {
-                    
-                   
-                    corriente=data.field1;
-            
-                    if(data.field1 <= 6.0 )
-                         $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color","yellowgreen");
-                    else if (data.field1 >= 6.0 && data.field1 <= 10.0 )
-                         $("#idCorriente").text(data.field1)
-                                          .removeClass("blink_500")
-                                          .addClass("blink")
-                                          .css("color","yellow");
+
+
+                    corriente = data.field1;
+
+                    if (data.field1 <= 6.0)
+                        $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color", "yellowgreen");
+                    else if (data.field1 >= 6.0 && data.field1 <= 10.0)
+                        $("#idCorriente").text(data.field1)
+                                .removeClass("blink_500")
+                                .addClass("blink")
+                                .css("color", "yellow");
                     else
-                         $("#idCorriente").text(data.field1)
-                                          .addClass("blink_500")
-                                          .css("color","red");;  
-                    
+                        $("#idCorriente").text(data.field1)
+                                .addClass("blink_500")
+                                .css("color", "red");
+                    ;
+
                     console.log("Corriente: " + data.field1);
-                   
+
                 })
 
                 .error(function () {
-                     
-                      console.log("Error comunicacion");
-                });  
-        
-        
-        
-        console.log("reloj: "+strHora);
+                    console.log("Error comunicacion");
+                });
+
+        console.log("reloj: " + strHora);
     },
 
     // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        
+    receivedEvent: function (id) {
+
         console.log('Received Event: ' + id);
+    },
+    cambioMedida: function () {
+        bMedida = !bMedida;
+        console.log("Cambio medida: " + bMedida);
     }
 };
 
