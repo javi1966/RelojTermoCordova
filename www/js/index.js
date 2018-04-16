@@ -17,9 +17,9 @@
  * under the License.
  */
 
-var  bMedida = true;
+var  bMedida = false;
 var  tempInt = "";
-
+var  temperatura="";
 var app = {
     // Application Constructor
     hora: "",
@@ -54,7 +54,7 @@ var app = {
     reloj: function () {
         var hora = new Date();
         var strHora = "";
-        var temperatura = "";
+       
         var humedad = "";
         var presion = "";
         var corriente = "";
@@ -94,7 +94,7 @@ var app = {
                     {
                         temperatura = data.field1;
                         $("#idTemp").text(temperatura.slice(0, 2))
-                                    .css("border-top","4px solid white")
+                                    .css("border-top","4px dotted white")
                                     .css("border-bottom","");
                                       // .css("color","red");
                         console.log("Temperatura 1: " + data.field1); 
@@ -105,7 +105,7 @@ var app = {
                         // temperatura = data.field4;
                          $("#idTemp").text(tempInt.slice(0, 2))
                                     // .css("color","blue");
-                                     .css("border-bottom","4px solid white")
+                                     .css("border-bottom","4px dotted white")
                                      .css("border-top","") ;
                                       
                                      
