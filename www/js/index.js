@@ -20,6 +20,8 @@
 var  bMedida = false;
 var  tempInt = "";
 var  temperatura="";
+
+
 var app = {
     // Application Constructor
     hora: "",
@@ -41,15 +43,29 @@ var app = {
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         //$(document).on('pageshow', '#main', this.onPageShow);
-
+        
         console.log("bindEvents:");
     },
 
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
         //$(document).bind("resume", app.onResumedApp);
+        window.addEventListener("batterylow", app.onBatteryLow, false); 
+        window.addEventListener("batterystatus", app.onBatteryStatus, false); 
         app.reloj();
         console.log("onDeviceReady");
+    },
+    onBatteryLow: function (info) {
+          //alert("Estado de la Bateria:  Nivel " + info.level + "\nEsta conectado: " + info.isPlugged);
+          $("idBateria").text("Nivel bateria " +info.level)
+                        .css("color", "red");
+          console.log("onBatteryLow");
+    },
+    onBatteryStatus: function (info) {
+          //alert("Estado de la Bateria:  Nivel " + info.level + "\nEsta conectado: " + info.isPlugged);
+          if(info.isPluged)
+            $("idBateria").text("");
+          console.log("onBatteryStatus");
     },
     reloj: function () {
         var hora = new Date();
@@ -115,11 +131,14 @@ var app = {
                     presion = data.field3;
                     //$("#idTemp").text(temperatura.slice(0, 2));
                     $("#idHumedad").text(humedad.slice(0, 2));
-                    $("#idPresion").text(presion.slice(0, 4));
+                    if(data.field3.length === 5)
+                      $("#idPresion").text(presion.slice(0, 3));
+                    else
+                      $("#idPresion").text(presion.slice(0, 4)); 
 
                     console.log("Temperatura: " + data.field1);
                     console.log("Humedad: " + data.field2);
-                    console.log("Presion: " + data.field3);
+                    console.log("Presion: " + data.field3+" L "+data.field3.length);
                 })
 
                 .error(function () {
@@ -156,6 +175,8 @@ var app = {
                 .error(function () {
                     console.log("Error comunicacion");
                 });
+                
+             
 
         console.log("reloj: " + strHora);
     },
@@ -167,7 +188,10 @@ var app = {
     },
     cambioMedida: function () {
         bMedida = !bMedida;
+       
         console.log("Cambio medida: " + bMedida);
+        
+       
     }
 };
 
