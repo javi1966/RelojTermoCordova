@@ -154,6 +154,7 @@ var app = {
 
 
                     corriente = data.field1;
+                    
 
                     if (data.field1 <= 6.0)
                         $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color", "yellowgreen");
@@ -161,12 +162,12 @@ var app = {
                         $("#idCorriente").text(data.field1)
                                 .removeClass("blink_500")
                                 .addClass("blink")
-                                .css("color", "yellow");
+                                .css("color", "orange");
                     else
                         $("#idCorriente").text(data.field1)
                                 .addClass("blink_500")
-                                .css("color", "red");
-                    ;
+                                .css("color", "yellow");
+                    
 
                     console.log("Corriente: " + data.field1);
 
