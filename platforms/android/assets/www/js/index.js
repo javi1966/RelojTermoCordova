@@ -20,15 +20,28 @@
 var  bMedida = false;
 var  tempInt = "";
 var  temperatura="";
-var app = {
+
+function degToCompass(num) {
+  var val = Math.floor((num / 22.5) + 0.5);
+  var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  return arr[(val % 16)];
+}
+
+
+const app = {
     // Application Constructor
     hora: "",
     minu: "",
     seg: "",
+    URI: "",
     punto: false,
     
-    initialize: function () {
-        this.bindEvents();
+    initialize:  () => {
+       
+        app.URI = "https://api.openweathermap.org/data/2.5/weather?q=sevilla,ES&appid=c2ecf0a83c555c2054704fd94ff29f9e&units=metric&lang=es&callback=?";
+        
+        app.bindEvents();
+        setInterval('app.medida()', 3600000);  // 1h
         setInterval('app.reloj()', 12000);
         setInterval('app.cambioMedida()', 5000);
         console.log("initialize: ");
@@ -41,23 +54,42 @@ var app = {
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         //$(document).on('pageshow', '#main', this.onPageShow);
-
+        app.medida();
         console.log("bindEvents:");
     },
 
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
         //$(document).bind("resume", app.onResumedApp);
+        window.addEventListener("batterylow", app.onBatteryLow, false); 
+        window.addEventListener("batterystatus", app.onBatteryStatus, false); 
+        
+        app.medida();
         app.reloj();
+       
         console.log("onDeviceReady");
     },
-    reloj: function () {
+    onBatteryLow: function (info) {
+          //alert("Estado de la Bateria:  Nivel " + info.level + "\nEsta conectado: " + info.isPlugged);
+          $("idBateria").text("Nivel bateria " +info.level)
+                        .css("color", "red");
+          console.log("onBatteryLow");
+    },
+    onBatteryStatus: function (info) {
+          //alert("Estado de la Bateria:  Nivel " + info.level + "\nEsta conectado: " + info.isPlugged);
+          if(info.isPluged)
+            $("idBateria").text("");
+          console.log("onBatteryStatus");
+    },
+    reloj:  () => {
+        
+        console.log("Reloj ...");
         var hora = new Date();
         var strHora = "";
        
         var humedad = "";
         var presion = "";
-        var corriente = "";
+        
 
         app.hora = hora.getHours();
         app.minu = hora.getMinutes();
@@ -115,11 +147,14 @@ var app = {
                     presion = data.field3;
                     //$("#idTemp").text(temperatura.slice(0, 2));
                     $("#idHumedad").text(humedad.slice(0, 2));
-                    $("#idPresion").text(presion.slice(0, 4));
+                    if(data.field3.length === 5)
+                      $("#idPresion").text(presion.slice(0, 3));
+                    else
+                      $("#idPresion").text(presion.slice(0, 4)); 
 
                     console.log("Temperatura: " + data.field1);
                     console.log("Humedad: " + data.field2);
-                    console.log("Presion: " + data.field3);
+                    console.log("Presion: " + data.field3+" L "+data.field3.length);
                 })
 
                 .error(function () {
@@ -134,20 +169,18 @@ var app = {
                 .done(function (data) {
 
 
-                    corriente = data.field1;
-
                     if (data.field1 <= 6.0)
                         $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color", "yellowgreen");
                     else if (data.field1 >= 6.0 && data.field1 <= 10.0)
                         $("#idCorriente").text(data.field1)
                                 .removeClass("blink_500")
                                 .addClass("blink")
-                                .css("color", "yellow");
+                                .css("color", "orange");
                     else
                         $("#idCorriente").text(data.field1)
                                 .addClass("blink_500")
-                                .css("color", "red");
-                    ;
+                                .css("color", "yellow");
+                    
 
                     console.log("Corriente: " + data.field1);
 
@@ -156,8 +189,40 @@ var app = {
                 .error(function () {
                     console.log("Error comunicacion");
                 });
+      
+    },
+    
+    medida : () => {
+        
+       console.log("Medida ...");
+        
+     $.getJSON(app.URI)
+        .done((data) => {
 
-        console.log("reloj: " + strHora);
+          console.log("Response: " + data);
+
+          console.log(`Temperatura :${data.main.temp} ºC,Humedad: ${data.main.humidity} %Hr,Presion: ${data.main.pressure} Kpa,${data.weather[0].description}`);
+          console.log(`Estado: ${data.weather[0].description}`);
+
+          console.log("Direccion viento: " + degToCompass(data.wind.deg));
+
+          const dir = degToCompass(data.wind.deg);
+
+        //marquee
+           $("#marText").html(`T:${data.main.temp} ºC,H: ${data.main.humidity} %Hr,P: ${data.main.pressure} Kpa`);//,DV ${data.wind.deg}º,${dir}`);        
+         
+         //Icono
+           let iconUrl = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+           console.log(iconUrl);
+           $("#wicon").attr('src', iconUrl);    
+           
+           $("#idViento").html(`DV ${data.wind.deg}º,${dir}`);
+
+          
+       }).error( () => {
+                    console.log("Error comunicacion");
+        });
+     
     },
 
     // Update DOM on a Received Event
@@ -167,7 +232,10 @@ var app = {
     },
     cambioMedida: function () {
         bMedida = !bMedida;
+       
         console.log("Cambio medida: " + bMedida);
+        
+       
     }
 };
 

@@ -21,16 +21,27 @@ var  bMedida = false;
 var  tempInt = "";
 var  temperatura="";
 
+function degToCompass(num) {
+  var val = Math.floor((num / 22.5) + 0.5);
+  var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  return arr[(val % 16)];
+}
 
-var app = {
+
+const app = {
     // Application Constructor
     hora: "",
     minu: "",
     seg: "",
+    URI: "",
     punto: false,
     
-    initialize: function () {
-        this.bindEvents();
+    initialize:  () => {
+       
+        app.URI = "https://api.openweathermap.org/data/2.5/weather?q=sevilla,ES&appid=c2ecf0a83c555c2054704fd94ff29f9e&units=metric&lang=es&callback=?";
+        
+        app.bindEvents();
+        setInterval('app.medida()', 3600000);  // 1h
         setInterval('app.reloj()', 12000);
         setInterval('app.cambioMedida()', 5000);
         console.log("initialize: ");
@@ -43,7 +54,7 @@ var app = {
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         //$(document).on('pageshow', '#main', this.onPageShow);
-        
+        app.medida();
         console.log("bindEvents:");
     },
 
@@ -52,7 +63,10 @@ var app = {
         //$(document).bind("resume", app.onResumedApp);
         window.addEventListener("batterylow", app.onBatteryLow, false); 
         window.addEventListener("batterystatus", app.onBatteryStatus, false); 
+        
+        app.medida();
         app.reloj();
+       
         console.log("onDeviceReady");
     },
     onBatteryLow: function (info) {
@@ -67,13 +81,15 @@ var app = {
             $("idBateria").text("");
           console.log("onBatteryStatus");
     },
-    reloj: function () {
+    reloj:  () => {
+        
+        console.log("Reloj ...");
         var hora = new Date();
         var strHora = "";
        
         var humedad = "";
         var presion = "";
-        var corriente = "";
+        
 
         app.hora = hora.getHours();
         app.minu = hora.getMinutes();
@@ -153,9 +169,6 @@ var app = {
                 .done(function (data) {
 
 
-                    corriente = data.field1;
-                    
-
                     if (data.field1 <= 6.0)
                         $("#idCorriente").text(data.field1).removeClass("blink blink_500").css("color", "yellowgreen");
                     else if (data.field1 >= 6.0 && data.field1 <= 10.0)
@@ -176,10 +189,40 @@ var app = {
                 .error(function () {
                     console.log("Error comunicacion");
                 });
-                
-             
+      
+    },
+    
+    medida : () => {
+        
+       console.log("Medida ...");
+        
+     $.getJSON(app.URI)
+        .done((data) => {
 
-        console.log("reloj: " + strHora);
+          console.log("Response: " + data);
+
+          console.log(`Temperatura :${data.main.temp} ºC,Humedad: ${data.main.humidity} %Hr,Presion: ${data.main.pressure} Kpa,${data.weather[0].description}`);
+          console.log(`Estado: ${data.weather[0].description}`);
+
+          console.log("Direccion viento: " + degToCompass(data.wind.deg));
+
+          const dir = degToCompass(data.wind.deg);
+
+        //marquee
+           $("#marText").html(`T:${data.main.temp} ºC,H: ${data.main.humidity} %Hr,P: ${data.main.pressure} Kpa`);//,DV ${data.wind.deg}º,${dir}`);        
+         
+         //Icono
+           let iconUrl = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+           console.log(iconUrl);
+           $("#wicon").attr('src', iconUrl);    
+           
+           $("#idViento").html(`DV ${data.wind.deg}º,${dir}`);
+
+          
+       }).error( () => {
+                    console.log("Error comunicacion");
+        });
+     
     },
 
     // Update DOM on a Received Event
