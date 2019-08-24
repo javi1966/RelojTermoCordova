@@ -209,14 +209,14 @@ const app = {
           const dir = degToCompass(data.wind.deg);
 
         //marquee
-           $("#marText").html(`T:${data.main.temp} ºC,H: ${data.main.humidity} %Hr,P: ${data.main.pressure} Kpa`);//,DV ${data.wind.deg}º,${dir}`);        
+           $("#marText").html(`${data.main.temp.toFixed(1)} ºC,${data.main.humidity} %,${data.main.pressure} mb,${data.wind.speed} m/s,${dir}`);//,DV ${data.wind.deg}º,${dir}`);        
          
          //Icono
            let iconUrl = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
            console.log(iconUrl);
            $("#wicon").attr('src', iconUrl);    
            
-           $("#idViento").html(`DV ${data.wind.deg}º,${dir}`);
+           //$("#idViento").html(`DV ${data.wind.deg}º,${dir}`);
 
           
        }).error( () => {
