@@ -23,7 +23,7 @@ var  temperatura="";
 
 function degToCompass(num) {
   var val = Math.floor((num / 22.5) + 0.5);
-  var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"];
   return arr[(val % 16)];
 }
 
